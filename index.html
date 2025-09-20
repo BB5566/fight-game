@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CRT精準對齊縮放終極版</title>    <style>
+      /* 基礎布局 */
+      body {
+        margin: 0;
+        background: #000;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* 遊戲畫面縮放容器 */
+      .scale-box {
+        width: 1536px;
+        height: 1024px;
+        position: relative;
+      }
+
+      /* 遊戲主畫面 */
+      .game-layer {
+        position: absolute;
+        left: 98px;
+        top: 90px;
+        width: 1000px;
+        height: 825px;
+        background-image: url("stage.png");
+        background-size: cover;
+        overflow: hidden;
+        z-index: 1;
+        display: flex;
+        justify-content: center;
+      }
+      .scanline {
+        pointer-events: none;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        background: repeating-linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.04) 0px,
+          rgba(255, 255, 255, 0.04) 2px,
+          transparent 2px,
+          transparent 4px
+        );
+        animation: scan 8s linear infinite;
+      }
+      @keyframes scan {
+        0% {
+          background-position-y: 0;
+        }
+        100% {
+          background-position-y: 8px;
+        }
+      }
+      .crt-frame {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1536px;
+        height: 1024px;
+        background: url("bg.png") no-repeat center/contain;
+        pointer-events: none;
+        z-index: 10;
+      }      /* UI介面布局 */
+      .ui-layer {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 700px;
+        z-index: 3;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        pointer-events: none;
+      }
+      
+      /* 血量條 */
+      .hp-bar {
+        width: 200px;
+        height: 22px;
+        background: #222;
+        border: 2px solid #444;
+        border-radius: 11px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2),
+          0 0 4px rgba(255, 255, 255, 0.1) inset;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .hp-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #f44, #f80);
+        width: 100%;
+        transition: width 0.3s cubic-bezier(0.7, 1.8, 0.4, 1);
+        position: relative;
+        border-radius: 9px;
+      }
+
+      .hp-fill::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(rgba(255, 255, 255, 0.2), transparent);
+      }
+      .energy-bar {
+        width: 120px;
+        height: 8px;
+        background: #222;
+        border: 2px solid #444;
+        border-radius: 6px;
+        margin-top: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
+          0 0 2px rgba(255, 255, 255, 0.1) inset;
+        overflow: hidden;
+      }
+
+      .energy-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #08f, #0ff);
+        width: 0%;
+        transition: width 0.3s cubic-bezier(0.7, 1.8, 0.4, 1);
+        border-radius: 4px;
+        position: relative;
+      }
+
+      .energy-fill::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(rgba(255, 255, 255, 0.3), transparent);
+      }
+      .player-stats {
+        text-align: center;
+      }
+      #tutorial-mask,
+      #gameover {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 100;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+      .tutorial-content,
+      .gameover-mask {
+        background: rgba(0, 0, 0, 0.9);
+        padding: 20px;
+        border: 2px solid #fff;
+        max-width: 80%;
+      }
+      .restart-btn,
+      #tutorial-close-btn {
+        background: #f00;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        margin-top: 20px;
+        cursor: pointer;
+      }
+      /* 遊戲容器樣式 */
+      #gameContainer {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      } /* 角色基本樣式 */
+      .character {
+        position: absolute;
+        width: 120px;
+        height: 150px;
+        bottom: 50px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center bottom;
+        transition: left 0.08s cubic-bezier(0.2, 0.8, 0.3, 1),
+          right 0.08s cubic-bezier(0.2, 0.8, 0.3, 1), transform 0.12s ease-out;
+        transform-origin: center bottom;
+        will-change: transform, left, right;
+      }
+      #ken {
+        left: 100px;
+        transform-origin: center;
+      }
+
+      #ryu {
+        right: 100px;
+        transform-origin: center;
+      }
+
+      /* 波動拳樣式 */
+      .hadouken {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background: url("hadouken.png") no-repeat center/contain;
+        z-index: 2;
+        filter: drop-shadow(0 0 8px rgba(64, 220, 255, 0.6));
+        animation: hadouken-spawn 0.15s ease-out;
+      }
+
+      @keyframes hadouken-spawn {
+        0% {
+          transform: scale(0.4);
+          opacity: 0.4;
+          filter: drop-shadow(0 0 15px rgba(64, 220, 255, 0.8));
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+          filter: drop-shadow(0 0 8px rgba(64, 220, 255, 0.6));
+        }
+      }
+
+      /* 爆炸效果樣式 */
+      .explosion {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        background: url("explosion.png") no-repeat center/contain;
+        z-index: 3;
+        animation: explode 0.5s forwards;
+      }
+
+      @keyframes explode {
+        0% {
+          transform: scale(0.5);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1.5);
+          opacity: 0;
+        }
+      }      /* 按鈕樣式 */
+      .restart-btn,
+      #tutorial-close-btn {
+        background: #f00;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        margin-top: 20px;
+        cursor: pointer;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        transition: all 0.2s;
+      }
+
+      .restart-btn:hover,
+      #tutorial-close-btn:hover {
+        background: #f22;
+        transform: translateY(-1px);
+      }
+
+      .restart-btn:active,
+      #tutorial-close-btn:active {
+        transform: translateY(0);
+      }
+
+      /* 遊戲結束效果 */
+      .gameover-mask {
+        text-align: center;
+        padding: 32px;
+        border-radius: 16px;
+        background: rgba(0, 0, 0, 0.8);
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1),
+          0 4px 16px rgba(0, 0, 0, 0.5);
+      }
+      .gameover-text {
+        font-size: 48px;
+        font-weight: bold;
+        margin-bottom: 16px;
+        background: linear-gradient(45deg, #f44, #f80);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+      }
+
+      .winner-text {
+        font-size: 24px;
+        color: #fff;
+        margin-bottom: 32px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="scale-box" id="scaleBox">
+      <div class="game-layer">
+        <div class="ui-layer">
+          <div class="player-stats">
+            <div class="hp-bar"><div id="ken-hp" class="hp-fill"></div></div>
+            <div class="energy-bar">
+              <div id="ken-energy" class="energy-fill"></div>
+            </div>
+            <div>Ken (A/D移動, F攻擊)</div>
+          </div>
+          <div class="player-stats">
+            <div class="hp-bar"><div id="ryu-hp" class="hp-fill"></div></div>
+            <div class="energy-bar">
+              <div id="ryu-energy" class="energy-fill"></div>
+            </div>
+            <div>Ryu (←/→移動, Enter攻擊)</div>
+          </div>
+        </div>
+        <div id="gameContainer">
+          <div id="ken" class="character"></div>
+          <div id="ryu" class="character"></div>
+        </div>
+        <div class="scanline"></div>
+        <div id="tutorial-mask">
+          <div class="tutorial-content">
+            <h2>遊戲操作說明</h2>
+            <p>Ken: 使用 A/D 左右移動，W 跳躍，F 發射波動拳</p>
+            <p>Ryu: 使用 ←/→ 左右移動，↑ 跳躍，Enter 發射波動拳</p>
+            <button id="tutorial-close-btn">開始遊戲</button>
+          </div>
+        </div>
+        <div id="gameover" style="display: none"></div>
+      </div>
+      <div class="crt-frame"></div>
+    </div>
+    <script>
+      function fitScaleBox() {
+        const box = document.getElementById("scaleBox");
+        const ww = window.innerWidth;
+        const wh = window.innerHeight;
+        const sw = 1536;
+        const sh = 1024;
+        const scale = Math.min(ww / sw, wh / sh);
+        box.style.transform = `scale(${scale})`;
+        box.style.transformOrigin = "top left";
+        // 置中
+        box.style.position = "absolute";
+        box.style.left = `${(ww - sw * scale) / 2}px`;
+        box.style.top = `${(wh - sh * scale) / 2}px`;
+      }
+      window.addEventListener("resize", fitScaleBox);
+      fitScaleBox();
+    </script>
+    <script src="script.js"></script>
+  </body>
+</html>

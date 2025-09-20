@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>復古未來主義作品集 | CRT數據卡帶讀取機</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app-container">
+      <main class="main-content">
+        <div class="page-container">
+          <div class="crt-container">
+            <div class="crt-screen">
+              <div class="scanline"></div>
+              <div class="screen-content">
+                <div id="standby-mode" class="standby-mode">
+                  <p class="standby-text">&gt;&gt; WAITING FOR INPUT...</p>
+                </div>
+                <div
+                  id="project-mode"
+                  class="project-mode"
+                  style="display: none"
+                >
+                  <div id="project-display"></div>
+                  <button class="eject-button" onclick="ejectCassette()">
+                    &gt;&gt; EJECT CASSETTE
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="crt-part top-left"></div>
+            <div class="crt-part top-right"></div>
+            <div class="crt-part bottom-left"></div>
+            <div class="crt-part bottom-right"></div>
+            <div class="crt-part side-top"></div>
+            <div class="crt-part side-bottom"></div>
+            <div class="crt-part side-left"></div>
+            <div class="crt-part side-right"></div>
+          </div>
+
+          <div class="control-panel">
+            <div
+              class="cassette-slot about-slot"
+              onclick="loadProject('關於我')"
+            >
+              <div class="cassette-label">[ 關於我 ]</div>
+              <div class="cassette-indicator"></div>
+            </div>
+            <div class="cassette-slot" onclick="loadProject('AI 藝術生成器')">
+              <div class="cassette-label">[ AI 藝術生成器 ]</div>
+            </div>
+            <div class="cassette-slot" onclick="loadProject('電商轉換優化')">
+              <div class="cassette-label">[ 電商轉換優化 ]</div>
+            </div>
+            <div class="cassette-slot" onclick="loadProject('互動體驗實驗室')">
+              <div class="cassette-label">[ 互動體驗實驗室 ]</div>
+            </div>
+            <div class="cassette-slot" onclick="loadProject('數據視覺化平台')">
+              <div class="cassette-label">[ 數據視覺化平台 ]</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
