@@ -56,13 +56,13 @@ const elements = {
 
 // 圖片路徑
 const IMAGES = {
-    KEN_STAND: 'ken-stand.png',
-    KEN_ATTACK: 'ken-hadouken.png',
-    KEN_HIT: 'ken-hit.png',
-    RYU_STAND: 'ryu-stand.png',
-    RYU_ATTACK: 'ryu-hadouken.png',
-    RYU_HIT: 'ryu-hit.png',
-    HADOUKEN: 'hadouken.png'
+    KEN_STAND: 'ken-stand.webp',
+    KEN_ATTACK: 'ken-hadouken.webp',
+    KEN_HIT: 'ken-hit.webp',
+    RYU_STAND: 'ryu-stand.webp',
+    RYU_ATTACK: 'ryu-hadouken.webp',
+    RYU_HIT: 'ryu-hit.webp',
+    HADOUKEN: 'hadouken.webp'
 };
 
 // ====== 工具函數 ======
