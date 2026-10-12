@@ -30,7 +30,8 @@ const gameState = {
     ryuHP: MAX_HP,
     gameOver: false,
     kenCooldown: false,
-    ryuCooldown: false,    kenJumping: false,
+    ryuCooldown: false,
+    kenJumping: false,
     ryuJumping: false,
     kenJumpKeyHeld: false,  // 追踪Ken的跳躍鍵是否按住
     ryuJumpKeyHeld: false,  // 追踪Ryu的跳躍鍵是否按住
@@ -51,7 +52,12 @@ const elements = {
     kenHpBar: document.getElementById('ken-hp'),
     ryuHpBar: document.getElementById('ryu-hp'),
     kenEnergyBar: document.getElementById('ken-energy'),
-    ryuEnergyBar: document.getElementById('ryu-energy')
+    ryuEnergyBar: document.getElementById('ryu-energy'),
+    kenHpText: document.getElementById('ken-hp-text'),
+    ryuHpText: document.getElementById('ryu-hp-text'),
+    kenHpBarContainer: document.getElementById('ken-hp-bar'),
+    ryuHpBarContainer: document.getElementById('ryu-hp-bar'),
+    dismissOrientationBtn: document.getElementById('dismiss-orientation-btn')
 };
 
 // 圖片路徑
@@ -81,6 +87,8 @@ function initGame() {
     elements.ryu.style.right = '100px';
     elements.ryu.style.bottom = GROUND_Y + 'px';
     elements.ryu.style.backgroundImage = `url('${IMAGES.RYU_STAND}')`;
+    if (elements.kenEnergyBar) elements.kenEnergyBar.style.width = '100%';
+    if (elements.ryuEnergyBar) elements.ryuEnergyBar.style.width = '100%';
     updateHpBars();
 }
 
@@ -108,6 +116,14 @@ function restartGame() {
     elements.ryu.style.right = '100px';
     elements.ryu.style.left = '';
     elements.ryu.style.bottom = GROUND_Y + 'px';
+    if (elements.kenEnergyBar) {
+        elements.kenEnergyBar.style.transition = 'none';
+        elements.kenEnergyBar.style.width = '100%';
+    }
+    if (elements.ryuEnergyBar) {
+        elements.ryuEnergyBar.style.transition = 'none';
+        elements.ryuEnergyBar.style.width = '100%';
+    }
     updateHpBars();
 }
 
@@ -207,8 +223,14 @@ function jump(character) {
 
 // ====== 血條更新 ======
 function updateHpBars() {
-    elements.kenHpBar.style.width = `${Math.max(0, gameState.kenHP)}%`;
-    elements.ryuHpBar.style.width = `${Math.max(0, gameState.ryuHP)}%`;
+    const kenVal = Math.max(0, gameState.kenHP);
+    const ryuVal = Math.max(0, gameState.ryuHP);
+    if (elements.kenHpBar) elements.kenHpBar.style.width = `${kenVal}%`;
+    if (elements.ryuHpBar) elements.ryuHpBar.style.width = `${ryuVal}%`;
+    if (elements.kenHpText) elements.kenHpText.textContent = `${kenVal} / ${MAX_HP}`;
+    if (elements.ryuHpText) elements.ryuHpText.textContent = `${ryuVal} / ${MAX_HP}`;
+    if (elements.kenHpBarContainer) elements.kenHpBarContainer.setAttribute('aria-valuenow', kenVal);
+    if (elements.ryuHpBarContainer) elements.ryuHpBarContainer.setAttribute('aria-valuenow', ryuVal);
 }
 
 // ====== 爆炸效果 ======
@@ -260,6 +282,16 @@ function fireHadouken(character) {
     const moveDirection = isFacingLeft ? -1 : 1;
     if (isKen) {
         gameState.kenCooldown = true;
+        if (elements.kenEnergyBar) {
+            elements.kenEnergyBar.style.transition = 'none';
+            elements.kenEnergyBar.style.width = '0%';
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    elements.kenEnergyBar.style.transition = 'width 1s linear';
+                    elements.kenEnergyBar.style.width = '100%';
+                });
+            });
+        }
         player.style.backgroundImage = `url('${IMAGES.KEN_ATTACK}')`;
         setTimeout(() => {
             gameState.kenCooldown = false;
@@ -267,6 +299,16 @@ function fireHadouken(character) {
         }, 1000);
     } else {
         gameState.ryuCooldown = true;
+        if (elements.ryuEnergyBar) {
+            elements.ryuEnergyBar.style.transition = 'none';
+            elements.ryuEnergyBar.style.width = '0%';
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    elements.ryuEnergyBar.style.transition = 'width 1s linear';
+                    elements.ryuEnergyBar.style.width = '100%';
+                });
+            });
+        }
         player.style.backgroundImage = `url('${IMAGES.RYU_ATTACK}')`;
         setTimeout(() => {
             gameState.ryuCooldown = false;
@@ -354,16 +396,21 @@ function fireHadouken(character) {
 // ====== 遊戲結束畫面 ======
 function showGameOver(winner) {
     gameState.gameOver = true;
-    let winnerText = winner ? `<div class="winner-text">勝者：${winner}</div>` : '';
+    let winnerText = winner ? `<div class="winner-text" id="winner-desc">勝者：${winner}</div>` : '';
     elements.gameoverMask.innerHTML = `
-        <div class="gameover-mask">
-            <div class="gameover-text">GAME OVER</div>
+        <div class="gameover-mask" role="alertdialog" aria-modal="true" aria-labelledby="gameover-title" aria-describedby="winner-desc">
+            <h2 class="gameover-text" id="gameover-title">GAME OVER</h2>
             ${winnerText}
-            <button class="restart-btn" id="restart-btn">重玩</button>
+            <button class="restart-btn" id="restart-btn" type="button" autofocus>重玩遊戲</button>
+            <p class="gameover-hint">點擊按鈕或按 Enter 鍵重新開始</p>
         </div>
     `;
-    elements.gameoverMask.style.display = '';
-    document.getElementById('restart-btn').onclick = restartGame;
+    elements.gameoverMask.style.display = 'flex';
+    const restartBtn = document.getElementById('restart-btn');
+    if (restartBtn) {
+        restartBtn.onclick = restartGame;
+        restartBtn.focus();
+    }
 }
 
 // ====== 遊戲主循環與事件 ======
@@ -374,16 +421,35 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-elements.tutorialCloseBtn.addEventListener('click', () => {
-    elements.tutorialMask.style.display = 'none';
-    initGame();
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-    gameLoop(performance.now());
-});
+if (elements.tutorialCloseBtn) {
+    elements.tutorialCloseBtn.addEventListener('click', () => {
+        elements.tutorialMask.style.display = 'none';
+        initGame();
+        document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('keyup', handleKeyUp);
+        gameLoop();
+    });
+    // 初次載入聚焦開始按鈕以利鍵盤導航
+    elements.tutorialCloseBtn.focus();
+}
+
+if (elements.dismissOrientationBtn) {
+    elements.dismissOrientationBtn.addEventListener('click', () => {
+        document.body.classList.add('allow-portrait');
+        if (typeof fitScaleBox === 'function') {
+            fitScaleBox();
+        }
+    });
+}
 
 function handleKeyDown(event) {
-    if (gameState.gameOver) return;
+    if (gameState.gameOver) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            restartGame();
+        }
+        return;
+    }
     if (event.key in keyState) {
         keyState[event.key] = true;
         event.preventDefault();
