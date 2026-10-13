@@ -89,7 +89,7 @@
         align-items: flex-start;
         pointer-events: none;
       }
-      
+
       /* 血量條 */
       .hp-bar {
         width: 200px;
@@ -173,9 +173,35 @@
       .gameover-mask {
         background: #000;
         padding: 30px;
-        border: 4px solid #fff;
-        box-shadow: inset 0 0 0 4px #000, inset 0 0 0 8px #fff, 0 0 20px rgba(255,255,255,0.5);
+        border: 4px solid #ffcc00;
+        box-shadow: inset 0 0 0 4px #000, 4px 4px 0 #000;
         max-width: 80%;
+      }
+      .controls-grid {
+        display: flex;
+        justify-content: space-around;
+        margin: 20px 0;
+        text-align: left;
+      }
+      .control-col h3 {
+        color: #ffcc00;
+        text-shadow: 2px 2px #000;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+      .control-col p {
+        margin: 10px 0;
+      }
+      .key {
+        display: inline-block;
+        border: 2px solid #fff;
+        border-radius: 4px;
+        padding: 2px 6px;
+        margin: 0 2px;
+        background: #333;
+        box-shadow: 2px 2px 0 #fff;
+        font-family: monospace;
+        font-weight: bold;
       }
       /* 遊戲容器樣式 */
       #gameContainer {
@@ -253,10 +279,10 @@
       }      /* 按鈕樣式 */
       .restart-btn,
       #tutorial-close-btn {
-        background: #f00;
-        color: #fff;
+        background: #ffcc00;
+        color: #000;
         border: 4px solid #fff;
-        box-shadow: inset -4px -4px 0px rgba(0,0,0,0.5);
+        box-shadow: 4px 4px 0 #fff;
         padding: 16px 32px;
         font-size: 24px;
         min-height: 48px;
@@ -270,13 +296,15 @@
 
       .restart-btn:hover,
       #tutorial-close-btn:hover {
-        background: #f22;
-        transform: translateY(-1px);
+        background: #ffe680;
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 #fff;
       }
 
       .restart-btn:active,
       #tutorial-close-btn:active {
-        transform: translateY(0);
+        transform: translate(4px, 4px);
+        box-shadow: 0 0 0 #fff;
       }
 
       /* 遊戲結束效果 */
@@ -315,6 +343,7 @@
         background: #000;
         z-index: 2000;
         color: #fff;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         text-align: center;
@@ -322,6 +351,19 @@
         padding: 20px;
         font-size: 24px;
         line-height: 1.5;
+      }
+      .phone-icon {
+        width: 40px;
+        height: 80px;
+        border: 4px solid #fff;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        animation: rotatePhone 2s ease-in-out infinite;
+      }
+      @keyframes rotatePhone {
+        0%, 20% { transform: rotate(0deg); }
+        40%, 60% { transform: rotate(-90deg); }
+        80%, 100% { transform: rotate(0deg); }
       }
       @media (max-width: 768px) and (orientation: portrait) {
         #orientation-warning {
@@ -364,13 +406,26 @@
     <div id="tutorial-mask">
       <div class="tutorial-content">
         <h2>遊戲操作說明</h2>
-        <p>Ken: 使用 A/D 左右移動，W 跳躍，F 發射波動拳</p>
-        <p>Ryu: 使用 ←/→ 左右移動，↑ 跳躍，Enter 發射波動拳</p>
+        <div class="controls-grid">
+          <div class="control-col">
+            <h3>Ken</h3>
+            <p><span class="key">A</span> <span class="key">D</span> 左右移動</p>
+            <p><span class="key">W</span> 跳躍</p>
+            <p><span class="key">F</span> 波動拳</p>
+          </div>
+          <div class="control-col">
+            <h3>Ryu</h3>
+            <p><span class="key">←</span> <span class="key">→</span> 左右移動</p>
+            <p><span class="key">↑</span> 跳躍</p>
+            <p><span class="key">Enter</span> 波動拳</p>
+          </div>
+        </div>
         <button id="tutorial-close-btn">開始遊戲</button>
       </div>
     </div>
     <div id="gameover" style="display: none"></div>
     <div id="orientation-warning">
+      <div class="phone-icon"></div>
       <div class="warning-content">請將手機轉為橫向以獲得最佳遊戲體驗</div>
     </div>
     <script>
