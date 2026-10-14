@@ -189,8 +189,18 @@
         margin-bottom: 10px;
         text-align: center;
       }
-      .control-col p {
+      .control-col .instruction-row {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        align-items: center;
+        gap: 8px;
         margin: 10px 0;
+      }
+      .control-col .instruction-row .keys {
+        text-align: left;
+      }
+      .control-col .instruction-row span:not(.keys) {
+        text-align: left;
       }
       .key {
         display: inline-block;
@@ -282,7 +292,6 @@
         background: #ffcc00;
         color: #000;
         border: 4px solid #fff;
-        box-shadow: 4px 4px 0 #fff;
         padding: 16px 32px;
         font-size: 24px;
         min-height: 48px;
@@ -297,14 +306,11 @@
       .restart-btn:hover,
       #tutorial-close-btn:hover {
         background: #ffe680;
-        transform: translate(2px, 2px);
-        box-shadow: 2px 2px 0 #fff;
       }
 
       .restart-btn:active,
       #tutorial-close-btn:active {
-        transform: translate(4px, 4px);
-        box-shadow: 0 0 0 #fff;
+        background: #e6b800;
       }
 
       /* 遊戲結束效果 */
@@ -351,6 +357,9 @@
         padding: 20px;
         font-size: 24px;
         line-height: 1.5;
+      }
+      #orientation-warning .warning-content {
+        word-break: keep-all;
       }
       .phone-icon {
         width: 40px;
@@ -409,15 +418,15 @@
         <div class="controls-grid">
           <div class="control-col">
             <h3>Ken</h3>
-            <p><span class="key">A</span> <span class="key">D</span> 左右移動</p>
-            <p><span class="key">W</span> 跳躍</p>
-            <p><span class="key">F</span> 波動拳</p>
+            <div class="instruction-row"><span class="keys"><span class="key">A</span> <span class="key">D</span></span><span>左右移動</span></div>
+            <div class="instruction-row"><span class="keys"><span class="key">W</span></span><span>跳躍</span></div>
+            <div class="instruction-row"><span class="keys"><span class="key">F</span></span><span>波動拳</span></div>
           </div>
           <div class="control-col">
             <h3>Ryu</h3>
-            <p><span class="key">←</span> <span class="key">→</span> 左右移動</p>
-            <p><span class="key">↑</span> 跳躍</p>
-            <p><span class="key">Enter</span> 波動拳</p>
+            <div class="instruction-row"><span class="keys"><span class="key">←</span> <span class="key">→</span></span><span>左右移動</span></div>
+            <div class="instruction-row"><span class="keys"><span class="key">↑</span></span><span>跳躍</span></div>
+            <div class="instruction-row"><span class="keys"><span class="key">Enter</span></span><span>波動拳</span></div>
           </div>
         </div>
         <button id="tutorial-close-btn">開始遊戲</button>
@@ -426,7 +435,7 @@
     <div id="gameover" style="display: none"></div>
     <div id="orientation-warning">
       <div class="phone-icon"></div>
-      <div class="warning-content">請將手機轉為橫向以獲得最佳遊戲體驗</div>
+      <div class="warning-content">請將手機轉為橫向<br>以獲得最佳遊戲體驗</div>
     </div>
     <script>
       function fitScaleBox() {
