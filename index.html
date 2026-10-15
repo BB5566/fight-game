@@ -179,9 +179,17 @@
       }
       .controls-grid {
         display: flex;
-        justify-content: space-around;
+        justify-content: center;
+        gap: 40px;
         margin: 20px 0;
         text-align: left;
+      }
+      .control-col {
+        flex: 1;
+      }
+      .control-col:first-child {
+        border-right: 2px dashed rgba(255, 255, 255, 0.3);
+        padding-right: 40px;
       }
       .control-col h3 {
         color: #ffcc00;
@@ -291,7 +299,8 @@
       #tutorial-close-btn {
         background: #ffcc00;
         color: #000;
-        border: 4px solid #fff;
+        border: none;
+        box-shadow: inset -4px -4px 0 rgba(0, 0, 0, 0.2), 0 0 10px rgba(255, 204, 0, 0.5);
         padding: 16px 32px;
         font-size: 24px;
         min-height: 48px;
@@ -306,11 +315,13 @@
       .restart-btn:hover,
       #tutorial-close-btn:hover {
         background: #ffe680;
+        box-shadow: inset -4px -4px 0 rgba(0, 0, 0, 0.2), 0 0 15px rgba(255, 204, 0, 0.8);
       }
 
       .restart-btn:active,
       #tutorial-close-btn:active {
         background: #e6b800;
+        box-shadow: inset 4px 4px 0 rgba(0, 0, 0, 0.2), 0 0 5px rgba(255, 204, 0, 0.5);
       }
 
       /* 遊戲結束效果 */
@@ -346,7 +357,7 @@
         display: none;
         position: fixed;
         inset: 0;
-        background: #000;
+        background: rgba(0, 0, 0, 0.85);
         z-index: 2000;
         color: #fff;
         flex-direction: column;
@@ -358,8 +369,18 @@
         font-size: 24px;
         line-height: 1.5;
       }
+      #orientation-warning::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: url("stage.webp") no-repeat center/cover;
+        filter: blur(8px);
+        opacity: 0.4;
+        z-index: -1;
+      }
       #orientation-warning .warning-content {
         word-break: keep-all;
+        text-shadow: 2px 2px 4px #000;
       }
       .phone-icon {
         width: 40px;
@@ -367,12 +388,13 @@
         border: 4px solid #fff;
         border-radius: 8px;
         margin-bottom: 20px;
-        animation: rotatePhone 2s ease-in-out infinite;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        animation: rotatePhone 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
       }
       @keyframes rotatePhone {
-        0%, 20% { transform: rotate(0deg); }
-        40%, 60% { transform: rotate(-90deg); }
-        80%, 100% { transform: rotate(0deg); }
+        0%, 15% { transform: rotate(0deg); }
+        45%, 55% { transform: rotate(-90deg); }
+        85%, 100% { transform: rotate(0deg); }
       }
       @media (max-width: 768px) and (orientation: portrait) {
         #orientation-warning {
